@@ -1,6 +1,6 @@
 import { UserModel } from "../../DB/index.js"
 import { ConflictException, NotFoundException } from "../../common/enums/utils/response/error.response.js"
-import { generateEncryption } from "../../common/enums/utils/security/encryption.security.js";
+import { generateEncryption , generateDecryption } from "../../common/enums/utils/security/encryption.security.js";
 import { generateHash, compareHash } from "../../common/enums/utils/security/hash.security.js"; 
 
 export const signup = async (inputs) => {
@@ -35,19 +35,25 @@ export const signup = async (inputs) => {
 export const login = async (inputs) => {
     const { email, password } = inputs;
 
+    
     const user = await UserModel.findOne({ email });
     if (!user) {
-        throw NotFoundException({ message: 'Invalid Credentials' });
+        throw NotFoundException({ message: 'Invalid credentials' });
     }
 
     
     const isPasswordMatch = await compareHash(password, user.password);
     if (!isPasswordMatch) {
-        throw NotFoundException({ message: 'Invalid Credentials' });
+        throw BadRequestException({ message: 'Invalid credentials' });
     }
 
+
     const userObj = user.toObject();
-    delete userObj.password;
+    delete userObj.password; 
+
+    if (userObj.phone) {
+        userObj.phone = await generateDecryption(userObj.phone); 
+    }
 
     return userObj;
 }
