@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { GenderEnum } from "../../common/enums/index.js";
+
 
 const userSchema = new mongoose.Schema({
     firstName:  {
@@ -8,7 +10,7 @@ const userSchema = new mongoose.Schema({
         maxLength:25 , 
         trim: true
     },
-     LastName:  {
+     lastName:  {
         type: String , 
         required:true , 
         minLength: [2, 'firstName cannot be less than 2 char but you have entered a {VALUE}`'] ,
@@ -28,10 +30,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    gender: {
-        type: String,
-        enum: ['male', 'female'],
-        default: 'male'
+    gender: { 
+        type: Number,
+        enum: Object.values(GenderEnum) ,
+        default: GenderEnum.Male 
     },
     isConfirmed: { 
         type: Boolean,
@@ -65,10 +67,10 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual("username").set(function(value)
 {
-    const [firstName , LastName] = value?.split('') || [];
-    this.set({firstName , LastName})
+    const [firstName , lastName] = value?.split('') || [];
+    this.set({firstName , lastName})
 }).get(function(){
-    return this.firstName + " " + this.LastName;
+    return this.firstName + " " + this.lastName;
 })
 
 export const UserModel = mongoose.model.User || mongoose.model("User" , userSchema);

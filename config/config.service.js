@@ -10,3 +10,5 @@ export const port = process.env.PORT || 3000;
 export const IV_LENGTH = parseInt(process.env.IV_LENGTH ??'16')
 
 export const ENC_SECRET_KEY =Buffer.from(process.env.ENC_SECRET_KEY)
+
+export const SALT_ROUND = parseInt(process.env.SALT_ROUND ?? '12');
