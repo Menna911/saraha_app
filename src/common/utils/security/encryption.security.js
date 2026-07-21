@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { ENC_SECRET_KEY, IV_LENGTH } from '../../../../../config/config.service.js'
+import { ENC_SECRET_KEY, IV_LENGTH } from '../../../../config/config.service.js'
 
 export const generateEncryption = async (plaintext) => {
     const iv = crypto.randomBytes(IV_LENGTH);

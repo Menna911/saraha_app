@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { login, signup } from "./auth.service.js";
-import { succesResponse } from "../../common/enums/utils/response/success.response.js";
+import { succesResponse } from "../../common/utils/response/success.response.js";
 
 const authRouter = Router();
 
@@ -17,8 +17,8 @@ authRouter.post("/signup", async (req, res, next) => {
 
 authRouter.post("/login", async (req, res, next) => {
     try {
-        const account = await login(req.body);
-        return succesResponse({ res, status: 200, data: { account } }); // الـ Login يفضل 200 مش 201
+        const credentials = await login(req.body);
+        return succesResponse({ res, status: 200, data: { credentials } }); 
     } catch (error) {
         next(error);
     }

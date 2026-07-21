@@ -1,4 +1,4 @@
-import { NODE_ENV } from "../../../../../config/config.service.js"
+import { NODE_ENV } from "../../../../config/config.service.js"
 
 //general customized error method
 export const ErrorResponse = ({ message = "Error", status = 400, extra = undefined } = {}) => {

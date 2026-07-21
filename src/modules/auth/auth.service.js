@@ -1,8 +1,10 @@
 import { UserModel } from "../../DB/index.js"
-import { ConflictException, NotFoundException } from "../../common/enums/utils/response/error.response.js"
-import { generateEncryption , generateDecryption } from "../../common/enums/utils/security/encryption.security.js";
-import { generateHash, compareHash } from "../../common/enums/utils/security/hash.security.js"; 
-
+import { ConflictException, NotFoundException , BadRequestException } from "../../common/utils/response/error.response.js"
+import { generateEncryption , generateDecryption } from "../../common/utils/security/encryption.security.js";
+import { generateHash, compareHash } from "../../common/utils/security/hash.security.js"; 
+import {USER_ACCESS_TOKEN_SECRET_KEY , USER_REFRESH_TOKEN_SECRET_KEY} from "../../../config/config.service.js"
+import jwt from 'jsonwebtoken'
+import { createLoginCredentials } from "../../common/utils/security/token.security.js";
 export const signup = async (inputs) => {
     const {username, firstName, lastName, email, password, phone } = inputs;
 
@@ -54,6 +56,11 @@ export const login = async (inputs) => {
     if (userObj.phone) {
         userObj.phone = await generateDecryption(userObj.phone); 
     }
+    console.log("SECRET KEY IN LOGIN:", USER_ACCESS_TOKEN_SECRET_KEY);
 
-    return userObj;
-}
+
+    const issuer = process.env.ISSUER || 'SarahaApp';
+    
+    return createLoginCredentials(user , issuer)
+   }
+ 

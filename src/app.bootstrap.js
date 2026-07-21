@@ -1,7 +1,9 @@
 import { NODE_ENV, port } from '../config/config.service.js'
 import { connectDB } from './DB/index.js'
 import { authRouter } from './modules/auth/index.js' 
+import { userRouter } from './modules/user/index.js'
 import express from 'express'
+
 
 async function bootstrap() {
     const app = express()
@@ -15,8 +17,8 @@ async function bootstrap() {
    
     app.get('/', (req, res) => res.send('Hello World!'))
     
-    app.use('/auth', authRouter) // جواه الـ signup والـ login
-
+    app.use('/auth', authRouter) 
+    app.use('/user', userRouter)
 
     
     app.use((req, res) => {
