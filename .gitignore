@@ -2,3 +2,6 @@
 /config/.env.production
 
 /node_modules
+/uploads
+/package-lock.json
+/package.json

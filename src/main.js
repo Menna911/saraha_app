@@ -9,7 +9,7 @@ bootstrap()
 const ENC_RESULT =await  generateEncryption("lol💕")
 console.log({ENC_RESULT});
 
-const DEC_RESULT = generateDecryption(ENC_RESULT);
+const DEC_RESULT = await generateDecryption(ENC_RESULT);
 console.log({ENC_RESULT ,DEC_RESULT
 });
 

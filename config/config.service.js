@@ -5,7 +5,7 @@ dotenv.config({ path: "./config/.env.development" });
 export const DB_URI = process.env.DB_URI;
 export const NODE_ENV = process.env.NODE_ENV;
 export const port = process.env.PORT || 3000;
-
+export const REDIS_URI = process.env.REDIS_URI
 
 export const IV_LENGTH = parseInt(process.env.IV_LENGTH ??'16')
 
@@ -21,3 +21,7 @@ export const SYSTEM_REFRESH_TOKEN_SECRET_KEY = process.env.SYSTEM_REFRESH_TOKEN_
 
 export const REFRESH_TOKEN_EXPIRES_IN = parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN)
 export const ACCESS_TOKEN_EXPIRES_IN = parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN)
+
+export const EMAIL_USER = process.env. EMAIL_USER
+export const EMAIL_PASS = process.env. EMAIL_PASS
+export const APPLICATION_NAME =process.env.APPLICATION_NAME

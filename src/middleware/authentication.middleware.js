@@ -18,7 +18,9 @@ return async (req , res , next) => {
          console.log(data);
          break;
          case 'Bearer' :
-            req.user = await decodeToken ({token:credentials})
+            const {user , decoded} = await decodeToken ({token:credentials , tokenType:token})
+            req.user = user;
+            req.decoded =decoded;
             break;
             default :
             throw BadRequestException({message:"missing authentication schema"})

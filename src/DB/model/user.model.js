@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password is required']
     },
+    oldPassword:[String],
     phone: {
         type: String,
         trim: true
@@ -35,9 +36,9 @@ const userSchema = new mongoose.Schema({
         enum: Object.values(GenderEnum) ,
         default: GenderEnum.Male 
     },
-    isConfirmed: { 
-        type: Boolean,
-        default: false
+    confirmEmail: { 
+        type: Date,
+        default: null
     },
     changeCredentialTime: {
         type: Date
@@ -52,9 +53,13 @@ const userSchema = new mongoose.Schema({
         enum: Object.values(RoleEnum),
         default: RoleEnum.System
     },
-    coverPic: [{ 
+    coverProfilePicture: [{ 
         type: String
     }],
+    profilePicture: {
+    type: String,
+    default: null
+    },
     address: {
         type: String,
         trim: true

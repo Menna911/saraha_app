@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken'
 import { findOne } from "../../../DB/database.repository.js";
 import { UserModel } from "../../../DB/index.js";
 import { TokenTypeEnum , RoleEnum} from '../../enums/index.js'
-import { BadRequestException , ConflictException, NotFoundException } from "../response/error.response.js";
+import { BadRequestException , ConflictException, NotFoundException, UnauthorizedException } from "../response/error.response.js";
+import {randomUUID} from 'node:crypto'
+import { tokenModel } from "../../../DB/model/token.model.js";
+import { get } from "../../services/redis.service.js";
+import { revokeTokenKey } from "../../../modules/user/user.service.js";
 export const generateToken = async({payload ={} , secret = USER_ACCESS_TOKEN_SECRET_KEY , options = {}}) =>{
     return jwt.sign(payload , secret ,options)
 }
@@ -49,9 +53,19 @@ const decoded = jwt.decode(token);
 
     const [tokenApproach , level] = decoded.aud || [] ;
     console.log({tokenApproach});
-    if (tokenType !== tokenApproach){
-        throw ConflictException({message:`Unexpected token mechanism ${tokenType} while you have used ${tokenApproach} `})
+  
+if (tokenType !== tokenApproach) {
+    throw  UnauthorizedException({
+        message: "Invalid login session"
+    });
+}
+    if (decoded.jti && await get(revokeTokenKey({userId:decoded.sub , jti:decoded.jti}))){
+            throw UnauthorizedException({
+        message: "Invalid login session"
+    })
     }
+
+
     const secret = await getTokenSignature ({tokenType: tokenApproach , level})
     const verifiedData = jwt.verify(token, secret);
     console.log(verifiedData)
@@ -59,13 +73,19 @@ const decoded = jwt.decode(token);
      if (!user) {
            throw NotFoundException({ message: 'Invalid credentials' });
        }
-       return user
+       console.log({changeCredentialTime:user.changeCredentialTime?.getTime() , iat:decoded.iat});
+       if(user.changeCredentialTime && user.changeCredentialTime?.getTime() >= decoded.iat *1000){
+        throw NotFoundException({message:"Invalid login session"})
+       }
+         
+       return {user , decoded}
 }
 
 export const createLoginCredentials = async (user , issuer) => {
     
     const {accessSignature , refreshedSignature } = await detectSignaturesLevel(user.role)
   
+    const jwtid = randomUUID()
     const access_token = await generateToken(
    {
            
@@ -75,7 +95,8 @@ export const createLoginCredentials = async (user , issuer) => {
             {
            issuer:'saraha' ,
            audience: [TokenTypeEnum.Access , user.role],
-           expiresIn:ACCESS_TOKEN_EXPIRES_IN
+           expiresIn:ACCESS_TOKEN_EXPIRES_IN,
+           jwtid
         }
        }
     )
@@ -89,7 +110,8 @@ export const createLoginCredentials = async (user , issuer) => {
             {
            issuer:'saraha' ,
            audience: [TokenTypeEnum.Refresh , user.role],
-           expiresIn:REFRESH_TOKEN_EXPIRES_IN
+           expiresIn:REFRESH_TOKEN_EXPIRES_IN,
+           jwtid
         }
        }
     )
